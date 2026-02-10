@@ -18,6 +18,24 @@ import {
 
 import { useAuth } from "../context/AuthContext";
 
+import type { Product, ProductPatch } from "../types/product";
+
+/**
+ * This describes exactly what your InventoryPage stores in `filters`.
+ * We keep x/y as strings because your inputs store them as strings ("", "12", etc.)
+ * and ProductTable converts them to numbers when filtering.
+ */
+type ProductFiltersState = {
+  referencia: string;
+  cor: string;
+  rack: string;
+  acab: string;
+  x: string;
+  y: string;
+  onlyMarked: boolean;
+};
+
+
 /*
   INVENTORY PAGE
   --------------
@@ -37,28 +55,27 @@ export default function InventoryPage() {
   /* =========================
      DATA
      ========================= */
-  const [products, setProducts] = useState([]);
-
+const [products, setProducts] = useState<Product[]>([]);
   /* =========================
      UI STATE
      ========================= */
-  const [showAdd, setShowAdd] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [showUsers, setShowUsers] = useState(false);
-  const [showAuditLog, setShowAuditLog] = useState(false);
+ const [showAdd, setShowAdd] = useState<boolean>(false);
+const [showFilters, setShowFilters] = useState<boolean>(false);
+const [showUsers, setShowUsers] = useState<boolean>(false);
+const [showAuditLog, setShowAuditLog] = useState<boolean>(false);
 
   /* =========================
      FILTERS
      ========================= */
-  const [filters, setFilters] = useState({
-    referencia: "",
-    cor: "",
-    rack: "",
-    acab: "",
-    x: "",
-    y: "",
-    onlyMarked: false
-  });
+  const [filters, setFilters] = useState<ProductFiltersState>({
+  referencia: "",
+  cor: "",
+  rack: "",
+  acab: "",
+  x: "",
+  y: "",
+  onlyMarked: false
+});
 
   /* =========================
      LOAD PRODUCTS
@@ -67,28 +84,28 @@ export default function InventoryPage() {
     loadProducts();
   }, []);
 
-  async function loadProducts() {
-    const data = await getProducts();
-    setProducts(data);
-  }
+async function loadProducts(): Promise<void> {
+  const data = await getProducts();
+  setProducts(data);
+}
 
   /* =========================
      CRUD
      ========================= */
-  async function handleAdd(product) {
-    await createProduct(product);
-    loadProducts();
-  }
+async function handleAdd(product: ProductPatch): Promise<void> {
+  await createProduct(product);
+  await loadProducts();
+}
 
-  async function handleUpdate(id, product) {
-    await updateProduct(id, product);
-    loadProducts();
-  }
+async function handleUpdate(id: string, product: ProductPatch): Promise<void> {
+  await updateProduct(id, product);
+  await loadProducts();
+}
 
-  async function handleDelete(id) {
-    await deleteProduct(id);
-    loadProducts();
-  }
+async function handleDelete(id: string): Promise<void> {
+  await deleteProduct(id);
+  await loadProducts();
+}
 
   /* =========================
      EXPORT CSV (VISIBLE BUTTON)
@@ -96,23 +113,25 @@ export default function InventoryPage() {
   function handleExport() {
     if (!products.length) return;
 
-    const headers = [
-      "referencia",
-      "cor",
-      "x",
-      "y",
-      "rack",
-      "acab",
-      "obs",
-      "marked"
-    ];
+const headers = [
+  "referencia",
+  "cor",
+  "x",
+  "y",
+  "rack",
+  "acab",
+  "obs",
+  "marked"
+] as const;
+
+type ExportHeader = (typeof headers)[number];
 
     const csv = [
       headers.join(","),
       ...products.map(p =>
         headers
-          .map(h => `"${String(p[h] ?? "").replace(/"/g, '""')}"`)
-          .join(",")
+          .map((h: ExportHeader) => `"${String(p[h] ?? "").replace(/"/g, '""')}"`)
+    .join(",")
       )
     ].join("\n");
 
@@ -133,8 +152,8 @@ export default function InventoryPage() {
   /* =========================
      IMPORT CSV (ROBUST)
      ========================= */
-  async function handleImport(e) {
-  const file = e.target.files[0];
+async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+  const file = e.target.files?.[0];
   if (!file) return;
 
   const text = await file.text();
@@ -144,7 +163,7 @@ export default function InventoryPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+        Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`
       },
       body: JSON.stringify({ csv: text })
     });
@@ -156,10 +175,13 @@ export default function InventoryPage() {
       return;
     }
 
-    const result = await res.json();
+    const result: unknown = await res.json();
     await loadProducts();
 
-    alert(`Imported ${result.rows} products`);
+    // If you want, later we can type result properly.
+    // For now we safely handle it as "any-like" without lying:
+    const rows = (result as { rows?: number }).rows ?? 0;
+    alert(`Imported ${rows} products`);
   } catch (err) {
     console.error(err);
     alert("Import failed");
@@ -167,6 +189,7 @@ export default function InventoryPage() {
 
   e.target.value = "";
 }
+
 
   /* =========================
      RENDER
