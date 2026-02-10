@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getAuditLogs } from "../../api/auditLogs";
-import Modal from "../common/Modal";
+import Modal from "../common/Modal.tsx";
 
 const PAGE_SIZE = 10;
 

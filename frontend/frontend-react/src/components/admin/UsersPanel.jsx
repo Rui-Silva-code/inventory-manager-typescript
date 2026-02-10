@@ -6,7 +6,7 @@ import {
   createUser
 } from "../../api/users";
 import { useAuth } from "../../context/AuthContext";
-import Modal from "../common/Modal";
+import Modal from "../common/Modal.tsx";
 
 export default function AdminUsersPanel({ onClose }) {
   const { user: currentUser } = useAuth();
