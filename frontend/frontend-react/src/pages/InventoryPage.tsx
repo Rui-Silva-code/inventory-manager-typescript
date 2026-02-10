@@ -19,22 +19,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 import type { Product, ProductPatch } from "../types/product";
-
-/**
- * This describes exactly what your InventoryPage stores in `filters`.
- * We keep x/y as strings because your inputs store them as strings ("", "12", etc.)
- * and ProductTable converts them to numbers when filtering.
- */
-type ProductFiltersState = {
-  referencia: string;
-  cor: string;
-  rack: string;
-  acab: string;
-  x: string;
-  y: string;
-  onlyMarked: boolean;
-};
-
+import type { ProductFiltersState } from "../types/filters";
 
 /*
   INVENTORY PAGE
@@ -55,83 +40,84 @@ export default function InventoryPage() {
   /* =========================
      DATA
      ========================= */
-const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
   /* =========================
      UI STATE
      ========================= */
- const [showAdd, setShowAdd] = useState<boolean>(false);
-const [showFilters, setShowFilters] = useState<boolean>(false);
-const [showUsers, setShowUsers] = useState<boolean>(false);
-const [showAuditLog, setShowAuditLog] = useState<boolean>(false);
+  const [showAdd, setShowAdd] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showUsers, setShowUsers] = useState<boolean>(false);
+  const [showAuditLog, setShowAuditLog] = useState<boolean>(false);
 
   /* =========================
      FILTERS
      ========================= */
   const [filters, setFilters] = useState<ProductFiltersState>({
-  referencia: "",
-  cor: "",
-  rack: "",
-  acab: "",
-  x: "",
-  y: "",
-  onlyMarked: false
-});
+    referencia: "",
+    cor: "",
+    rack: "",
+    acab: "",
+    x: "",
+    y: "",
+    onlyMarked: false
+  });
 
   /* =========================
      LOAD PRODUCTS
      ========================= */
   useEffect(() => {
-    loadProducts();
+    void loadProducts();
   }, []);
 
-async function loadProducts(): Promise<void> {
-  const data = await getProducts();
-  setProducts(data);
-}
+  async function loadProducts(): Promise<void> {
+    const data = await getProducts();
+    setProducts(data);
+  }
 
   /* =========================
      CRUD
      ========================= */
-async function handleAdd(product: ProductPatch): Promise<void> {
-  await createProduct(product);
-  await loadProducts();
-}
+  async function handleAdd(product: ProductPatch): Promise<void> {
+    await createProduct(product);
+    await loadProducts();
+  }
 
-async function handleUpdate(id: string, product: ProductPatch): Promise<void> {
-  await updateProduct(id, product);
-  await loadProducts();
-}
+  async function handleUpdate(id: string, product: ProductPatch): Promise<void> {
+    await updateProduct(id, product);
+    await loadProducts();
+  }
 
-async function handleDelete(id: string): Promise<void> {
-  await deleteProduct(id);
-  await loadProducts();
-}
+  async function handleDelete(id: string): Promise<void> {
+    await deleteProduct(id);
+    await loadProducts();
+  }
 
   /* =========================
      EXPORT CSV (VISIBLE BUTTON)
      ========================= */
-  function handleExport() {
+  function handleExport(): void {
     if (!products.length) return;
 
-const headers = [
-  "referencia",
-  "cor",
-  "x",
-  "y",
-  "rack",
-  "acab",
-  "obs",
-  "marked"
-] as const;
+    const headers = [
+      "referencia",
+      "cor",
+      "x",
+      "y",
+      "rack",
+      "acab",
+      "obs",
+      "marked"
+    ] as const;
 
-type ExportHeader = (typeof headers)[number];
+    type ExportHeader = (typeof headers)[number];
 
     const csv = [
       headers.join(","),
-      ...products.map(p =>
+      ...products.map((p) =>
         headers
           .map((h: ExportHeader) => `"${String(p[h] ?? "").replace(/"/g, '""')}"`)
-    .join(",")
+          .join(",")
       )
     ].join("\n");
 
@@ -152,44 +138,43 @@ type ExportHeader = (typeof headers)[number];
   /* =========================
      IMPORT CSV (ROBUST)
      ========================= */
-async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const text = await file.text();
+    const text = await file.text();
 
-  try {
-    const res = await fetch("/products/import", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`
-      },
-      body: JSON.stringify({ csv: text })
-    });
+    try {
+      const res = await fetch("/products/import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`
+        },
+        body: JSON.stringify({ csv: text })
+      });
 
-    if (!res.ok) {
-      const err = await res.text();
+      if (!res.ok) {
+        const err = await res.text();
+        console.error(err);
+        alert("Import failed");
+        return;
+      }
+
+      const result: unknown = await res.json();
+      await loadProducts();
+
+      // We don't assume the exact response shape yet.
+      // If the server returns { rows: number }, we show it.
+      const rows = (result as { rows?: number }).rows ?? 0;
+      alert(`Imported ${rows} products`);
+    } catch (err) {
       console.error(err);
       alert("Import failed");
-      return;
     }
 
-    const result: unknown = await res.json();
-    await loadProducts();
-
-    // If you want, later we can type result properly.
-    // For now we safely handle it as "any-like" without lying:
-    const rows = (result as { rows?: number }).rows ?? 0;
-    alert(`Imported ${rows} products`);
-  } catch (err) {
-    console.error(err);
-    alert("Import failed");
+    e.target.value = "";
   }
-
-  e.target.value = "";
-}
-
 
   /* =========================
      RENDER
@@ -208,7 +193,7 @@ async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<voi
           {canEdit && (
             <button
               className={showAdd ? "active" : ""}
-              onClick={() => setShowAdd(v => !v)}
+              onClick={() => setShowAdd((v) => !v)}
             >
               Add Product
             </button>
@@ -216,7 +201,7 @@ async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<voi
 
           <button
             className={showFilters ? "active" : ""}
-            onClick={() => setShowFilters(v => !v)}
+            onClick={() => setShowFilters((v) => !v)}
           >
             Filters
           </button>
@@ -224,7 +209,7 @@ async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<voi
           <button
             className={filters.onlyMarked ? "active" : ""}
             onClick={() =>
-              setFilters(f => ({
+              setFilters((f) => ({
                 ...f,
                 onlyMarked: !f.onlyMarked
               }))
@@ -248,7 +233,7 @@ async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<voi
 
           <button
             onClick={() =>
-              document.getElementById("import-file").click()
+              document.getElementById("import-file")?.click()
             }
           >
             Import
@@ -333,4 +318,3 @@ async function handleImport(e: React.ChangeEvent<HTMLInputElement>): Promise<voi
     </PageLayout>
   );
 }
-
