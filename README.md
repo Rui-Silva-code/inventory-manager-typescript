@@ -1,3 +1,8 @@
+## 🚧 TypeScript Migration (In Progress/Learning)
+
+This repository is being progressively migrated from JavaScript to TypeScript
+as a learning-focused exercise.
+
 # 📦 Inventory Manager
 
 > A full-stack **learning project** built with React, Node.js, and PostgreSQL, focused on exploring real-world inventory management patterns such as authentication, role-based access control, audit logging, and Excel-like data interaction.  
