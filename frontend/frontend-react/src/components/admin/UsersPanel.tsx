@@ -8,101 +8,116 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import Modal from "../common/Modal";
 
-export default function AdminUsersPanel({ onClose }) {
+import type { User, CreateUserInput } from "../../types/user";
+import type { Role } from "../../types/role";
+
+/**
+ * Props for this component.
+ * - onClose is a function with no args that closes the modal.
+ */
+type AdminUsersPanelProps = {
+  onClose: () => void;
+};
+
+export default function AdminUsersPanel({ onClose }: AdminUsersPanelProps) {
   const { user: currentUser } = useAuth();
 
   /* =========================
      DATA
-     ========================= */
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
+     =========================
+     We tell TypeScript: users is ALWAYS an array of User objects.
+  */
+  const [users, setUsers] = useState<User[]>([]);
+  const [search, setSearch] = useState<string>("");
 
   /* =========================
      ROLE EDIT STATE
-     ========================= */
-  const [editingId, setEditingId] = useState(null);
-  const [editRole, setEditRole] = useState("");
+     =========================
+     editingId is either a user id (string) or null (when not editing).
+     editRole is a Role.
+  */
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editRole, setEditRole] = useState<Role>("viewer");
 
   /* =========================
      CREATE USER FORM
-     ========================= */
-  const [form, setForm] = useState({
+     =========================
+     We reuse CreateUserInput type so our form matches what createUser expects.
+  */
+  const [form, setForm] = useState<CreateUserInput>({
     email: "",
     password: "",
     role: "viewer"
   });
 
   useEffect(() => {
-    loadUsers();
+    void loadUsers();
   }, []);
 
-  async function loadUsers() {
+  async function loadUsers(): Promise<void> {
     const data = await getUsers();
     setUsers(data);
   }
 
   /* =========================
      CREATE USER
-     ========================= */
-  async function handleCreateUser(e) {
+     =========================
+     Type the event so TypeScript knows e.preventDefault exists.
+  */
+  async function handleCreateUser(e: React.FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
     await createUser(form);
     setForm({ email: "", password: "", role: "viewer" });
-    loadUsers();
+    await loadUsers();
   }
 
   /* =========================
      ROLE EDIT FLOW
      ========================= */
-  function startEditRole(user) {
+  function startEditRole(user: User): void {
     setEditingId(user.id);
     setEditRole(user.role);
   }
 
-  function cancelEditRole() {
+  function cancelEditRole(): void {
     setEditingId(null);
-    setEditRole("");
+    setEditRole("viewer");
   }
 
-  async function saveEditRole(user) {
+  async function saveEditRole(user: User): Promise<void> {
     await updateUserRole(user.id, editRole);
     cancelEditRole();
-    loadUsers();
+    await loadUsers();
   }
 
   /* =========================
      DELETE USER
      ========================= */
-  async function handleDelete(user) {
+  async function handleDelete(user: User): Promise<void> {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     await deleteUser(user.id);
-    loadUsers();
+    await loadUsers();
   }
 
   /* =========================
      HELPERS
      ========================= */
-  const adminCount = users.filter(u => u.role === "admin").length;
+  const adminCount = users.filter((u) => u.role === "admin").length;
 
   const filteredUsers = useMemo(() => {
-    return users.filter(u =>
-      u.email.toLowerCase().includes(search.toLowerCase())
-    );
+    const q = search.toLowerCase();
+    return users.filter((u) => u.email.toLowerCase().includes(q));
   }, [users, search]);
 
-  function roleBadge(role) {
-    return (
-      <span className={`role-badge role-${role}`}>
-        {role}
-      </span>
-    );
+  function roleBadge(role: Role) {
+    return <span className={`role-badge role-${role}`}>{role}</span>;
   }
 
   /* =========================
      RENDER
      ========================= */
   return (
-    <Modal title="Users" onClose={onClose}>
+    <Modal title="Users" onClose={onClose} isOpen>
       {/* =========================
          CREATE USER
          ========================= */}
@@ -114,7 +129,9 @@ export default function AdminUsersPanel({ onClose }) {
             Email
             <input
               value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, email: e.target.value }))
+              }
               required
             />
           </label>
@@ -124,7 +141,9 @@ export default function AdminUsersPanel({ onClose }) {
             <input
               type="password"
               value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, password: e.target.value }))
+              }
               required
             />
           </label>
@@ -133,7 +152,9 @@ export default function AdminUsersPanel({ onClose }) {
             Role
             <select
               value={form.role}
-              onChange={e => setForm({ ...form, role: e.target.value })}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, role: e.target.value as Role }))
+              }
             >
               <option value="viewer">Viewer</option>
               <option value="editor">Editor</option>
@@ -153,12 +174,11 @@ export default function AdminUsersPanel({ onClose }) {
       <div>
         <h4 className="users-section-title">Users</h4>
 
-        {/* SEARCH */}
         <input
           className="users-search"
           placeholder="Search by email..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
         />
 
         <table>
@@ -172,7 +192,7 @@ export default function AdminUsersPanel({ onClose }) {
           </thead>
 
           <tbody>
-            {filteredUsers.map(u => {
+            {filteredUsers.map((u) => {
               const isSelf = u.id === currentUser.id;
               const isLastAdmin = u.role === "admin" && adminCount === 1;
               const isEditing = editingId === u.id;
@@ -185,7 +205,7 @@ export default function AdminUsersPanel({ onClose }) {
                     {isEditing ? (
                       <select
                         value={editRole}
-                        onChange={e => setEditRole(e.target.value)}
+                        onChange={(e) => setEditRole(e.target.value as Role)}
                         disabled={isSelf}
                       >
                         <option value="viewer">Viewer</option>
@@ -202,24 +222,17 @@ export default function AdminUsersPanel({ onClose }) {
                   <td className="actions-cell">
                     {isEditing ? (
                       <>
-                        <button
-                          onClick={() => saveEditRole(u)}
-                          disabled={isSelf}
-                        >
+                        <button onClick={() => void saveEditRole(u)} disabled={isSelf}>
                           Save
                         </button>
-                        <button onClick={cancelEditRole}>
-                          Cancel
-                        </button>
+                        <button onClick={cancelEditRole}>Cancel</button>
                       </>
                     ) : (
                       <>
-                        <button onClick={() => startEditRole(u)}>
-                          Edit
-                        </button>
+                        <button onClick={() => startEditRole(u)}>Edit</button>
                         <button
                           disabled={isSelf || isLastAdmin}
-                          onClick={() => handleDelete(u)}
+                          onClick={() => void handleDelete(u)}
                         >
                           Delete
                         </button>
