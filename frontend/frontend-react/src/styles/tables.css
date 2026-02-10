@@ -1,0 +1,298 @@
+/* =========================================================
+   EXCEL-LIKE TABLE STYLES (VISUAL ONLY)
+   ========================================================= */
+
+/* ===== TABLE WRAPPER ===== */
+.table-wrapper {
+  max-height: 200vh;
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 3px solid #000;
+  border-radius: 5px;
+}
+
+/* ===== TABLE BASE ===== */
+table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fdfdfd;
+}
+
+/* ===== HEADER ===== */
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  background: var(--primary);
+  font-weight: 600;
+
+  border-bottom: 2px solid #000;
+  border-right: 1px solid #000;
+
+  padding: 0;
+  white-space: nowrap;
+}
+
+thead th:last-child {
+  border-right: 1px solid black;
+}
+
+/* ===== HEADER CONTENT ===== */
+.th-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 10px;
+}
+
+.th-title {
+  white-space: nowrap;
+}
+
+/* ===== SORT INDICATOR (FIX) ===== */
+.sort-indicator {
+  cursor: pointer;          /* ✅ FIX */
+  user-select: none;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.sort-indicator:hover {
+  color: #000;
+}
+
+/* ===== COLUMN RESIZER ===== */
+.col-resizer {
+  position: absolute;
+  top: 0;
+  right: -4px;
+
+  width: 10px;
+  height: 100%;
+
+  cursor: ew-resize;
+  user-select: none;
+}
+
+/* ===== BODY CELLS ===== */
+tbody td {
+  padding: 8px 10px;
+  white-space: nowrap;
+
+  border-right: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+}
+
+tbody td:last-child {
+  border-right: none;
+}
+
+/* ===== ROW STATES ===== */
+.row-marked {
+  background: #fca5a5;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ===== MODAL TABLE FIXES ===== */
+.modal-body .table-wrapper {
+  max-height: 55vh;
+  overflow: auto;
+}
+
+.modal-body thead th {
+  top: 0;
+  text-align: center;
+}
+
+.modal-body table {
+  border: 1px solid #000;
+}
+
+/* Remove scroll inside modals */
+.modal-body .table-wrapper {
+  max-height: none;
+  overflow: visible;
+}
+
+/* =========================
+   AUDIT LOG VISUAL STATES
+   ========================= */
+
+.audit-create {
+  color: #15803d;          /* green */
+  font-weight: 600;
+}
+
+.audit-update {
+  color: #ca8a04;          /* yellow */
+  font-weight: 600;
+}
+
+.audit-delete {
+  color: #b91c1c;          /* red */
+  font-weight: 600;
+}
+
+/* Changed field highlight (UPDATE) */
+.audit-changed {
+  background-color: rgb(169, 85, 247); /* light purple */
+  padding: 2px 6px;
+}
+
+/* Audit table scroll container */
+.audit-table-wrapper {
+  max-height: 1320px;
+  overflow-y: auto;
+  border: 3px solid #000;
+  border-radius: 5px;
+  margin-bottom: 12px;
+}
+
+/* Keep headers sticky inside audit table */
+.audit-table-wrapper thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* LOCK TABLE GEOMETRY */
+.excel-table {
+  width: 100%;
+  table-layout: fixed; /* 🔥 KEY FIX */
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+
+/* EDIT MODE MUST NOT EXPAND */
+.excel-table td input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ======================================
+   COLUMN CLIP / ELLIPSIS
+   ====================================== */
+.cell-clip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ======================================
+   ACTIONS COLUMN SPACING
+   ====================================== */
+.actions-header {
+  padding-left: 16px;
+}
+
+.actions-cell {
+  padding: 6px 12px;
+  display: flex;
+  gap: 8px;
+}
+
+/* ======================================
+   RESIZER UX
+   ====================================== */
+.col-resizer {
+  position: absolute;
+  right: -4px;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+}
+
+.col-resizer:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* =========================
+   USERS TABLE IMPROVEMENTS
+   ========================= */
+
+.users-search {
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  max-width: 280px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+
+/* Role badges */
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.role-admin {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.role-editor {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.role-viewer {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* Actions spacing */
+.actions-header {
+  padding-left: 16px;
+}
+
+.actions-cell {
+  padding: 6px 12px;
+  display: flex;
+  gap: 8px;
+}
+
+/* =========================
+   AUDIT ROW COLORS (FULL ROW)
+   ========================= */
+
+.audit-row-create {
+  background-color: rgb(39, 255, 118); /* green */
+}
+
+.audit-row-update {
+  background-color: rgb(255, 209, 69); /* yellow */
+}
+
+.audit-row-delete {
+  background-color: rgb(240, 68, 68); /* red */
+}
+
+/* Keep readability */
+.audit-row-create td,
+.audit-row-update td,
+.audit-row-delete td {
+  font-weight: 500;
+}

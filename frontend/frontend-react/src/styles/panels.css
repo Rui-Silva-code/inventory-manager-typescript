@@ -1,0 +1,210 @@
+/* =========================================================
+   FORM LAYOUTS
+   ========================================================= */
+
+.panel.add-product,
+.panel.filters {
+  max-width: 720px;
+  border: 1px solid rgb(119, 129, 212);
+  margin: 0 auto 20px auto;
+  border-radius: 8px;
+  padding: 16px 24px 24px 24px;
+}
+
+.panel-title {
+  margin-bottom: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Base grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-grid input {
+  padding: 6px 8px;
+  border-radius: 25px;
+  border: 1px solid var(--border-light);
+}
+
+/* 50 / 50 top blocks */
+.form-half {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Rows */
+.form-row {
+  display: grid;
+  gap: 5px;
+}
+
+.form-row.full {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.form-row:not(.full) {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Full width */
+.full {
+  grid-column: 1 / -1;
+}
+
+/* Footer */
+.form-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* Checkbox inline */
+.checkbox-inline {
+  display: inline-flex;          /* inline + flex */
+  align-items: center;           /* vertical center */
+  gap: 8px;                      /* space between checkbox and text */
+  padding: 6px 12px;
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;                     /* kill browser defaults */
+  cursor: pointer;
+}
+/* Override form label column layout for inline checkboxes */
+.form-grid label.checkbox-inline {
+  flex-direction: row;       /* 🔥 THIS is the missing piece */
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-text {
+  cursor: default;
+  user-select: none;
+}
+
+
+/* Primary rounded action button (Create / Clear filters) */
+button[type="submit"],
+.primary-action {
+  padding: 8px 16px;
+  border-radius: 25px;
+  border: none;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Stacked footer (Add Product only) */
+.form-footer-stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   USERS PANEL (ADMIN / ENTERPRISE)
+   ========================= */
+
+.users-create {
+  max-width: 420px;
+  margin: 0 auto;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 16px 24px 24px 24px;
+}
+
+.users-section-title {
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Vertical admin-style form */
+.users-form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.users-form-vertical label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.users-form-vertical input,
+.users-form-vertical select {
+  max-width: 320px;
+}
+
+/* Create User button on the LEFT */
+.users-form-vertical button {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+/* Section divider */
+.users-divider {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: 24px 0;
+}
+
+/* USERS TABLE POLISH */
+.users-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f1f5f9;
+}
+
+.users-table tr.self {
+  background: #e0f2fe;
+}
+
+.role-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role-admin { background: #fee2e2; color: #991b1b; }
+.role-editor { background: #fef3c7; color: #92400e; }
+.role-viewer { background: #e0e7ff; color: #3730a3; }
+

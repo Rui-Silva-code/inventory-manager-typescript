@@ -1,0 +1,100 @@
+/* =========================================================
+   LOGIN PAGE — CLEAN ENTERPRISE STYLE
+   Colors: White / Black / Light Blue
+   ========================================================= */
+
+/* ===== PAGE BACKGROUND ===== */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+/* ===== LOGIN CARD ===== */
+.login-card {
+  width: 380px;
+  background: white;
+  border: 2px solid #000; /* strong identity */
+  padding: 28px;
+}
+
+/* ===== HEADER ===== */
+.login-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #a2bef5; /* light blue accent */
+}
+
+.login-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.login-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: #000;
+}
+
+/* ===== FORM ===== */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Labels */
+.login-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: #000;
+}
+
+/* Inputs */
+.login-form input {
+  margin-top: 4px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #000;
+  outline: none;
+}
+
+/* Focus state */
+.login-form input:focus {
+  border-color: #a2bef5;
+  box-shadow: 0 0 0 1px #a2bef5;
+}
+
+/* ===== ERROR ===== */
+.login-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+/* ===== BUTTON ===== */
+.login-form button {
+  margin-top: 8px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+
+  background: #a2bef5; /* light blue */
+  border: 2px solid #000;
+  color: #000;
+
+  cursor: pointer;
+}
+
+/* Hover = slightly darker blue */
+.login-form button:hover {
+  background: #8fb0f0;
+}
